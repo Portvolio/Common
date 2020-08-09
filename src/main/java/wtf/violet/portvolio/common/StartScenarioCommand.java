@@ -18,13 +18,42 @@ public class StartScenarioCommand implements CommandExecutor
     private final JavaPlugin plugin;
     private final Consumer<BukkitTask> runnable;
     private final int ticks;
+    private final boolean sync;
     private boolean started = false;
 
-    public StartScenarioCommand(JavaPlugin plugin, Consumer<BukkitTask> runnable, int ticks)
+    /**
+     * Initialize the command, with a sync task.
+     * @param plugin Plugin to base itself on
+     * @param runnable Runnable to execute
+     * @param ticks Ticks for the delay and period
+     */
+    public StartScenarioCommand(
+        final JavaPlugin plugin,
+        final Consumer<BukkitTask> runnable,
+        final int ticks
+    )
+    {
+        this(plugin, runnable, ticks, true);
+    }
+
+    /**
+     * Initialize the command.
+     * @param plugin Plugin to base itself on
+     * @param runnable Runnable to execute
+     * @param ticks Ticks for the delay and period
+     * @param sync Whether it should be run synchronously
+     */
+    public StartScenarioCommand(
+        final JavaPlugin plugin,
+        final Consumer<BukkitTask> runnable,
+        final int ticks,
+        final boolean sync
+    )
     {
         this.plugin = plugin;
         this.runnable = runnable;
         this.ticks = ticks;
+        this.sync = sync;
     }
 
     @Override
@@ -44,6 +73,9 @@ public class StartScenarioCommand implements CommandExecutor
         return true;
     }
 
+    /**
+     * Register the command to /startscenario.
+     */
     public void register()
     {
         plugin.getCommand("startscenario").setExecutor(this);
