@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import wtf.violet.common.nms.NmsUtil;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
@@ -55,14 +54,11 @@ public abstract class BaseCommand<PluginT extends JavaPlugin> extends Command
     /** Register the command */
     public void register()
         throws
-        ClassNotFoundException,
         NoSuchMethodException,
         InvocationTargetException,
         IllegalAccessException
     {
-        final Class<?> serverClass = Class.forName(
-            "org.bukkit.craftbukkit." + NmsUtil.getNmsVersion() + ".CraftServer"
-        );
+        final Class<?> serverClass = getPlugin().getServer().getClass();
 
         final SimpleCommandMap commandMap = (SimpleCommandMap) serverClass
             .getDeclaredMethod("getCommandMap")
