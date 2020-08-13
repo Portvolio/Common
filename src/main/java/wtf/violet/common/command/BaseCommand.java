@@ -4,7 +4,6 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-//import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,7 +41,7 @@ public abstract class BaseCommand<PluginT extends JavaPlugin> extends Command
             // This is stupid, but super has to be the first call
             aliases.length == 1
                 ? Collections.emptyList()
-                : Arrays.asList(Arrays.copyOfRange(aliases, 1, aliases.length - 1))
+                : Arrays.asList(Arrays.copyOfRange(aliases, 1, aliases.length))
         ));
 
         this.plugin = plugin;
