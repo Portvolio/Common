@@ -1,4 +1,4 @@
-package wtf.violet.portvolio.common;
+package wtf.violet.common;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

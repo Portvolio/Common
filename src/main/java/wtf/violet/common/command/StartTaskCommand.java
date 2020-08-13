@@ -1,10 +1,8 @@
-package wtf.violet.portvolio.common;
+package wtf.violet.common.command;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.function.Consumer;
@@ -12,28 +10,27 @@ import java.util.function.Consumer;
 /**
  * A command that starts a task, common for "every x amount of time" UHC scenarios
  */
-public class StartScenarioCommand implements CommandExecutor
+public class StartTaskCommand<PluginT extends JavaPlugin> extends BaseCommand<PluginT>
 {
 
-    private final JavaPlugin plugin;
     private final Consumer<BukkitTask> runnable;
     private final int ticks;
     private final boolean sync;
     private boolean started = false;
 
     /**
-     * Initialize the command, with a sync task.
+     * Initialize the command, with a sync task. Assuming commandLabel is startscenario
      * @param plugin Plugin to base itself on
      * @param runnable Runnable to execute
      * @param ticks Ticks for the delay and period
      */
-    public StartScenarioCommand(
-        final JavaPlugin plugin,
+    public StartTaskCommand(
+        final PluginT plugin,
         final Consumer<BukkitTask> runnable,
         final int ticks
     )
     {
-        this(plugin, runnable, ticks, true);
+        this(plugin, runnable, ticks, true, "startscenario");
     }
 
     /**
@@ -43,42 +40,43 @@ public class StartScenarioCommand implements CommandExecutor
      * @param ticks Ticks for the delay and period
      * @param sync Whether it should be run synchronously
      */
-    public StartScenarioCommand(
-        final JavaPlugin plugin,
+    public StartTaskCommand(
+        final PluginT plugin,
         final Consumer<BukkitTask> runnable,
         final int ticks,
-        final boolean sync
+        final boolean sync,
+        final String commandLabel
     )
     {
-        this.plugin = plugin;
+        super(plugin, "Start the scenario", "", "scenario.start", commandLabel);
+
         this.runnable = runnable;
         this.ticks = ticks;
         this.sync = sync;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public void run(PluginT plugin, String alias, CommandSender sender, String[] args)
     {
         if (started)
         {
-            sender.sendMessage(ChatColor.RED + "Scenario is already started!");
-            return true;
+            error(sender, "Scenario is already started!");
+            return;
         }
 
         started = true;
 
-        plugin.getServer().getScheduler().runTaskTimer(plugin, runnable, ticks, ticks);
-        sender.sendMessage(ChatColor.GREEN + "The scenario has been started!");
+        final BukkitScheduler scheduler = plugin.getServer().getScheduler();
 
-        return true;
-    }
+        if (sync)
+        {
+            scheduler.runTaskTimer(plugin, runnable, ticks, ticks);
+        } else
+        {
+            scheduler.runTaskTimerAsynchronously(plugin, runnable, ticks, ticks);
+        }
 
-    /**
-     * Register the command to /startscenario.
-     */
-    public void register()
-    {
-        plugin.getCommand("startscenario").setExecutor(this);
+        success(sender, "The scenario has been started!");
     }
 
 }
