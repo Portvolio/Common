@@ -98,6 +98,14 @@ public abstract class BaseCommand<PluginT extends JavaPlugin> extends Command
         @Nonnull final String[] args
     )
     {
+        final String perm = getPermission();
+
+        if (perm != null && !sender.hasPermission(perm))
+        {
+            error(sender, "You do not have permission to do this!");
+            return true;
+        }
+
         run(plugin, commandLabel, sender, args);
         return true;
     }
